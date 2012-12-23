@@ -1,8 +1,8 @@
-_Onion Web Share_
+_Onion Web Share_<br />
 
-GUI Webshare programe
+GUI Webshare programe<br />
 
-/main.py -> Draw UI & load Server
-/server.py -> HTTP Server Class
-/template -> Client Page(HTML)
-/list.conf -> folder list & name
+/main.py -> Draw UI & load Server<br />
+/server.py -> HTTP Server Class<br />
+/template -> Client Page(HTML)<br />
+/list.conf -> folder list & name<br />
