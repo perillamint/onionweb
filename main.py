@@ -18,7 +18,7 @@ class Hello:
 
 		def terminateConfirm(self, widget, data=None):
 				confirmBox = ConfirmBox()
-				confirmBox.confirmBox()
+				confirmBox.confirmBox("This action will terminate running server.\nAre you sure?")
 
 		def __init__(self):
 				self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -36,23 +36,34 @@ class Hello:
 
 class ConfirmBox:
 		def destroy(self, widget, data=None):
-			gtk.main_quit()
+			return False
 
-		def confirmBox(self):
+		def confirmBox(self, msgText):
 				self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 				self.window.connect("destroy", self.destroy)
 				self.buttonOK = gtk.Button(stock=gtk.STOCK_OK)
 				self.buttonCancel = gtk.Button(stock=gtk.STOCK_CANCEL)
 				self.box = gtk.VBox()
+				self.label = gtk.Label(msgText)
+
+				#Create buttonBox.
 				self.buttonBox = gtk.HButtonBox()
 				self.buttonBox.set_layout(gtk.BUTTONBOX_END)
 				self.buttonBox.set_spacing(10)
+
+				#Add buttons to buttonBox
 				self.buttonBox.add(self.buttonOK)
 				self.buttonBox.add(self.buttonCancel)
+
+				#Pack everything in VBox
+				self.box.pack_start(self.label)
 				self.box.pack_start(self.buttonBox)
+				
+				#Show everything
 				self.buttonOK.show()
 				self.buttonCancel.show()
 				self.buttonBox.show()
+				self.label.show()
 				self.window.add(self.box)
 				self.box.show()
 				self.window.show()
