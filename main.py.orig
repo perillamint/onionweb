@@ -2,7 +2,7 @@ import pygtk
 pygtk.require("2.0")
 import gtk
 
-class MainUI:
+class Hello:
 		#def delete_event(self, widget, event, data=None):
 		#		print "Delete event occured."
 		#		return False
@@ -36,7 +36,11 @@ class MainUI:
 
 class ConfirmBox:
 		def destroy(self, widget, data=None):
+<<<<<<< HEAD
+			return False
+=======
 			self.window.destroy()
+>>>>>>> e5fc22659db01552abd413a44dbc1ea0a2090224
 
 		def confirmBox(self, msgText):
 				self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -70,5 +74,5 @@ class ConfirmBox:
 				self.window.show()
 
 if __name__ == "__main__":
-		mainUI = MainUI()
-		mainUI.main()
+		hello = Hello()
+		hello.main()
