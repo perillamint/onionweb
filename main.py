@@ -36,13 +36,14 @@ class Hello:
 
 class ConfirmBox:
 		def destroy(self, widget, data=None):
-			return False
+			self.window.destroy()
 
 		def confirmBox(self, msgText):
 				self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 				self.window.connect("destroy", self.destroy)
 				self.buttonOK = gtk.Button(stock=gtk.STOCK_OK)
 				self.buttonCancel = gtk.Button(stock=gtk.STOCK_CANCEL)
+				self.buttonCancel.connect("clicked", self.destroy)
 				self.box = gtk.VBox()
 				self.label = gtk.Label(msgText)
 
