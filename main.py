@@ -17,8 +17,13 @@ class MainUI:
 				closeWindow.show()
 
 		def terminateConfirm(self, widget, data=None):
-				confirmBox = ConfirmBox()
-				confirmBox.confirmBox("This action will terminate running server.\nAre you sure?")
+				confirmBox = gtk.MessageDialog(type=gtk.MESSAGE_QUESTION, buttons=gtk.BUTTONS_OK_CANCEL)
+				confirmBox.set_markup("This will close onionwebshare server. Are you sure?")
+				userAnswer = confirmBox.run()
+				if userAnswer == gtk.RESPONSE_OK:
+					gtk.main_quit()
+				
+				confirmBox.destroy()
 
 		def __init__(self):
 				self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
