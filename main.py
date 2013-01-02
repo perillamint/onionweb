@@ -1,7 +1,6 @@
 import pygtk
 pygtk.require("2.0")
 import gtk
-import socket, fcntl, struct
 
 class MainUI:
 		#def delete_event(self, widget, event, data=None):
@@ -40,6 +39,14 @@ class MainUI:
 			else:
 				print "Wrong port number"
 
+		def remove_row(self, widget, data=None):
+			if data.keyval != 65535:
+				return False
+			selection = self.tree.get_selection()
+			selection.set_mode(gtk.SELECTION_SINGLE)
+			treemodel, treeiter = selection.get_selected()
+			self.collist.remove(treeiter)
+
 		def __init__(self):
 				self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 				#self.window.connect("delete_event", self.delete_event)
@@ -56,9 +63,6 @@ class MainUI:
 				btnbox = gtk.HButtonBox()
 				btnbox.set_layout(gtk.BUTTONBOX_END)
 				btnbox.set_spacing(10)
-				btnbox.add(self.make_button("test"))
-				btnbox.add(self.make_button("test"))
-				btnbox.add(self.make_button("test"))
 				btnbox.add(self.make_button("Exit", "clicked", self.terminateConfirm))
 				btnbox.show()
 
@@ -79,16 +83,18 @@ class MainUI:
 				linkbox.show()
 
 				#selected folder listview ( 4th line )
-				collist = gtk.ListStore(str, str)
+				self.collist = gtk.ListStore(str, str)
 
 				f = open("list.conf")
 				datas = f.readlines()
 				for data in datas:
 					arr = data.split(',')
-					collist.append([arr[0].strip(), arr[1].strip()])
+					self.collist.append([arr[0].strip(), arr[1].strip()])
 
 				viewcontainer = gtk.TreeView()
-				viewcontainer.set_model(collist)
+				self.tree = viewcontainer
+				viewcontainer.connect("key-press-event", self.remove_row)
+				viewcontainer.set_model(self.collist)
 
 				cell = gtk.CellRendererText()
 				col = gtk.TreeViewColumn("Name")
