@@ -47,6 +47,16 @@ class MainUI:
 			treemodel, treeiter = selection.get_selected()
 			self.collist.remove(treeiter)
 
+		def addFile(self, widget, data=None):
+			filechooser = gtk.FileChooserDialog(title="Choose file to host", action=gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
+			filechooser.set_current_folder("~")
+			filechooser.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
+			response = filechooser.run()
+
+			if response == gtk.RESPONSE_OK:
+				print filechooser.get_filename(), 'selected'
+			filechooser.destroy()
+
 		def __init__(self):
 				self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 				#self.window.connect("delete_event", self.delete_event)
@@ -63,6 +73,7 @@ class MainUI:
 				btnbox = gtk.HButtonBox()
 				btnbox.set_layout(gtk.BUTTONBOX_END)
 				btnbox.set_spacing(10)
+				btnbox.add(self.make_button("Add", "clicked", self.addFile))
 				btnbox.add(self.make_button("Exit", "clicked", self.terminateConfirm))
 				btnbox.show()
 
