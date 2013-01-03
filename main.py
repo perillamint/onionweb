@@ -54,14 +54,18 @@ class MainUI:
 			response = filechooser.run()
 
 			if response == gtk.RESPONSE_OK:
-				print filechooser.get_filename(), 'selected'
+				sfile = filechooser.get_filename()
+				print sfile, 'selected'
+				if len(sfile) > 15:
+					self.lblrfname.set_text(sfile[:15] + '...')
+					self.rfname = sfile
 			filechooser.destroy()
 
 		def __init__(self):
 				self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 				#self.window.connect("delete_event", self.delete_event)
 				self.window.connect("destroy", self.destroy)
-				self.window.set_border_width(10)
+				self.window.set_border_width(5)
 
 				#setting label ( 1st line )
 				label = gtk.Label()
@@ -72,14 +76,30 @@ class MainUI:
 				#setting btnbox ( 2nd line )
 				btnbox = gtk.HButtonBox()
 				btnbox.set_layout(gtk.BUTTONBOX_END)
-				btnbox.set_spacing(10)
-				btnbox.add(self.make_button("Add", "clicked", self.addFile))
+				btnbox.set_spacing(5)
+
+				self.lblrfname = gtk.Label("/")
+				self.lblrfname.show()
+
+				btnbox.add(self.lblrfname)
+				btnbox.add(self.make_button("Select", "clicked", self.addFile))
 				btnbox.add(self.make_button("Exit", "clicked", self.terminateConfirm))
 				btnbox.show()
 
-				#setting box ( 3rd line )
+				#setting add list box ( 3rd line )
+				addbox = gtk.HBox()
+				addbox.set_spacing(5)
+
+				self.foldername = gtk.Entry()
+				self.foldername.show()
+
+				addbox.add(self.foldername)
+				addbox.add(self.make_button("Add", "clicked", lambda w, d: self.collist.append([self.foldername.get_text(), self.rfname])))
+				addbox.show()
+
+				#setting box ( 4th line )
 				linkbox = gtk.HBox()
-				linkbox.set_spacing(10)
+				linkbox.set_spacing(5)
 
 				lblport = gtk.Label("Server Port : ")
 				lblport.show()
@@ -93,7 +113,7 @@ class MainUI:
 
 				linkbox.show()
 
-				#selected folder listview ( 4th line )
+				#selected folder listview ( 5th line )
 				self.collist = gtk.ListStore(str, str)
 
 				f = open("list.conf")
@@ -126,8 +146,9 @@ class MainUI:
 				top_box = gtk.VBox(spacing = 5)
 				top_box.pack_start(label) # 1st line
 				top_box.pack_start(btnbox) # 2nd line
-				top_box.pack_start(linkbox) # 3rd line
-				top_box.pack_start(viewcontainer) # 4th line
+				top_box.pack_start(addbox) # 3rd line
+				top_box.pack_start(linkbox) # 4th line
+				top_box.pack_start(viewcontainer) # 5th line
 				top_box.show()
 
 				self.window.add(top_box)
