@@ -1,6 +1,11 @@
 import pygtk
 pygtk.require("2.0")
 import gtk
+import os, signal
+from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from  server import Server
+
+pid = None
 
 class MainUI:
 		#def delete_event(self, widget, event, data=None):
@@ -21,6 +26,7 @@ class MainUI:
 				confirmBox.set_markup("This will close onionwebshare server. Are you sure?")
 				userAnswer = confirmBox.run()
 				if userAnswer == gtk.RESPONSE_OK:
+					self.stop_server(None)
 					gtk.main_quit()
 				
 				confirmBox.destroy()
@@ -32,12 +38,30 @@ class MainUI:
 			button.show()
 			return button
 
-		def startserver(self, widget, data=None):
+		def start_server(self, widget, data=None):
 			portnum = self.portbox.get_text()
-			if portnum.isdigit() is True and portnum is not None:
+			if portnum.isdigit() is True and portnum is not None and int(portnum) > 1024:
 				print "Server start. Port : " + portnum
+				pid = os.fork()
+				if pid == 0:
+					fp = open("owsserver.pid", "w")
+					fp.write(str(os.getpid()))
+					fp.close()
+					self.server_func(int(portnum))
+				return
 			else:
 				print "Wrong port number"
+
+		def stop_server(self, widget, data=None):
+			fp = open("owsserver.pid", "r")
+			child = fp.read().strip()
+			print "Server stop."
+			os.kill(int(child), signal.SIGKILL)
+			fp.close()
+
+		def server_func(self, portnum):
+			self.server = HTTPServer(('localhost', portnum), Server)
+			self.server.serve_forever()
 
 		def remove_row(self, widget, data=None):
 			if data.keyval != 65535:
@@ -73,7 +97,24 @@ class MainUI:
 				#label.set_justify(gtk.JUSTIFY_LEFT)
 				label.show()
 
-				#setting btnbox ( 2nd line )
+				#setting box ( 2nd line )
+				linkbox = gtk.HBox()
+				linkbox.set_spacing(5)
+
+				lblport = gtk.Label("Server Port : ")
+				lblport.show()
+				linkbox.pack_start(lblport)
+
+				self.portbox = gtk.Entry()
+				self.portbox.show()
+				linkbox.pack_start(self.portbox)
+
+				linkbox.pack_start(self.make_button("Start", "clicked", self.start_server))
+				linkbox.pack_start(self.make_button("Stop", "clicked", self.stop_server))
+
+				linkbox.show()
+
+				#setting btnbox ( 3rd line )
 				btnbox = gtk.HButtonBox()
 				btnbox.set_layout(gtk.BUTTONBOX_END)
 				btnbox.set_spacing(5)
@@ -86,32 +127,20 @@ class MainUI:
 				btnbox.add(self.make_button("Exit", "clicked", self.terminateConfirm))
 				btnbox.show()
 
-				#setting add list box ( 3rd line )
+				#setting add list box ( 4th line )
 				addbox = gtk.HBox()
 				addbox.set_spacing(5)
+
+				lbltitle = gtk.Label("Title : ")
+				lbltitle.show()
 
 				self.foldername = gtk.Entry()
 				self.foldername.show()
 
+				addbox.add(lbltitle)
 				addbox.add(self.foldername)
 				addbox.add(self.make_button("Add", "clicked", lambda w, d: self.collist.append([self.foldername.get_text(), self.rfname])))
 				addbox.show()
-
-				#setting box ( 4th line )
-				linkbox = gtk.HBox()
-				linkbox.set_spacing(5)
-
-				lblport = gtk.Label("Server Port : ")
-				lblport.show()
-				linkbox.pack_start(lblport)
-
-				self.portbox = gtk.Entry()
-				self.portbox.show()
-				linkbox.pack_start(self.portbox)
-
-				linkbox.pack_start(self.make_button("Start", "clicked", self.startserver))
-
-				linkbox.show()
 
 				#selected folder listview ( 5th line )
 				self.collist = gtk.ListStore(str, str)
@@ -121,6 +150,7 @@ class MainUI:
 				for data in datas:
 					arr = data.split(',')
 					self.collist.append([arr[0].strip(), arr[1].strip()])
+				f.close()
 
 				viewcontainer = gtk.TreeView()
 				self.tree = viewcontainer
@@ -145,9 +175,9 @@ class MainUI:
 				#boxing
 				top_box = gtk.VBox(spacing = 5)
 				top_box.pack_start(label) # 1st line
-				top_box.pack_start(btnbox) # 2nd line
-				top_box.pack_start(addbox) # 3rd line
-				top_box.pack_start(linkbox) # 4th line
+				top_box.pack_start(linkbox) # 2nd line
+				top_box.pack_start(btnbox) # 3rd line
+				top_box.pack_start(addbox) # 4th line
 				top_box.pack_start(viewcontainer) # 5th line
 				top_box.show()
 
