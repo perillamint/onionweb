@@ -54,11 +54,13 @@ class MainUI:
 				print "Wrong port number"
 
 		def stop_server(self, widget, data=None):
-			fp = open("owsserver.pid", "r")
-			child = fp.read().strip()
-			print "Server stop."
-			os.kill(int(child), signal.SIGKILL)
-			fp.close()
+			try:
+				fp = open("owsserver.pid", "r")
+				child = fp.read().strip()
+				print "Server stop."
+				os.kill(int(child), signal.SIGKILL)
+				fp.close()
+			except: pass
 
 		def server_func(self, portnum):
 			self.server = HTTPServer(('localhost', portnum), Server)
