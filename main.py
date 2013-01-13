@@ -14,6 +14,7 @@ class MainUI:
 
 		def destroy(self, widget, data=None):
 				print "Application terminating..."
+				self.saveConfig()
 				gtk.main_quit()
 
 		def closeWindow(self, widget, data=None):
@@ -84,6 +85,18 @@ class MainUI:
 					self.lblrfname.set_text(sfile[:15] + '...')
 					self.rfname = sfile
 			filechooser.destroy()
+
+		def saveConfigFile(self, model, path, iter, confFp):
+			str = model.get_value(iter, 0)
+			str += ","
+			str += model.get_value(iter, 1)
+			str += "\n"
+			confFp.write(str)
+	
+		def saveConfig(self):
+			f = open("list.conf", "w")
+			self.collist.foreach(self.saveConfigFile, f)
+			f.close()
 
 		def __init__(self):
 				self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
