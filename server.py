@@ -11,8 +11,9 @@ class Server(BaseHTTPRequestHandler):
 				print "read template"
 				f = open('template', 'r')
 				self.send_response(200)
-				readed = f.read()
-				self.wfile.write(readed)
+				self.send_header('Content-Type', 'text/html')
+				self.end_headers()
+				self.wfile.write(f.read())
 				f.close()
 				return
 
