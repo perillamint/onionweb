@@ -4,8 +4,7 @@ import gtk
 import os, signal
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from  server import Server
-
-pid = None
+import subprocess
 
 class MainUI:
 		#def delete_event(self, widget, event, data=None):
@@ -27,7 +26,6 @@ class MainUI:
 				confirmBox.set_markup("This will close onionwebshare server. Are you sure?")
 				userAnswer = confirmBox.run()
 				if userAnswer == gtk.RESPONSE_OK:
-					self.stop_server(None)
 					gtk.main_quit()
 				
 				confirmBox.destroy()
@@ -42,25 +40,37 @@ class MainUI:
 		def start_server(self, widget, data=None):
 			portnum = self.portbox.get_text()
 			if portnum.isdigit() is True and portnum is not None and int(portnum) > 1024:
-				print "Server start. Port : " + portnum
-				pid = os.fork()
-				if pid == 0:
-					fp = open("owsserver.pid", "w")
-					fp.write(str(os.getpid()))
-					fp.close()
-					self.server_func(int(portnum))
-				return
+				cmd = "python server.py " + str(portnum)
+				if self.p is None:
+					self.p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+					print "Server start. Port : " + portnum
+				else:
+					print "Server is already binded"
+#				pid = os.fork()
+#				if pid == 0:
+#					fp = open("owsserver.pid", "w")
+#					fp.write(str(os.getpid()))
+#					fp.close()
+#					self.server_func(int(portnum))
+#				return
 			else:
 				print "Wrong port number"
 
 		def stop_server(self, widget, data=None):
-			try:
-				fp = open("owsserver.pid", "r")
-				child = fp.read().strip()
-				print "Server stop."
-				os.kill(int(child), signal.SIGKILL)
-				fp.close()
-			except: pass
+			if self.p is None:
+				print "Already process killed"
+			else:
+				pid = self.p.pid
+				os.kill(pid, signal.SIGKILL)
+				os.kill(pid+1, signal.SIGKILL)
+				self.p = None
+#			try
+#				fp = open("owsserver.pid", "r")
+#				child = fp.read().strip()
+#				print "Server stop."
+#				os.kill(int(child), signal.SIGKILL)
+#				fp.close()
+#			except: pass
 
 		def server_func(self, portnum):
 			self.server = HTTPServer(('localhost', portnum), Server)
@@ -101,6 +111,7 @@ class MainUI:
 			f.close()
 
 		def __init__(self):
+				self.p = None
 				self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 				#self.window.connect("delete_event", self.delete_event)
 				self.window.connect("destroy", self.destroy)

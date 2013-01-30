@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import string,cgi,time, os
+import string,cgi,time, os, sys
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
 class Server(BaseHTTPRequestHandler):
@@ -90,14 +90,14 @@ class ServerConfig():
 	def __init__(self):
 		self.configListing()
 
-#def main():
-#	try:
-#		server = HTTPServer(('localhost', 3080), Server)
-#		print 'server start...'
-#		server.serve_forever()
-#	except KeyboardInterrupt:
-#		server.socket.close()
-#		print 'server stop...'
+def main():
+	try:
+		server = HTTPServer(('localhost', int(sys.argv[1])), Server)
+		print 'server start...'
+		server.serve_forever()
+	except KeyboardInterrupt:
+		server.socket.close()
+		print 'server stop...'
 
-#if __name__ == '__main__':
-#	main()
+if __name__ == '__main__':
+	main()
