@@ -146,6 +146,7 @@ class MainUI:
 				btnbox.set_spacing(5)
 
 				self.lblrfname = gtk.Label("/")
+				self.rfname = "/"
 				self.lblrfname.show()
 
 				btnbox.add(self.lblrfname)
