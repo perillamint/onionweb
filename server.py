@@ -3,20 +3,11 @@
 
 import string,cgi,time, os, sys
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from pprint import pprint
 
 class Server(BaseHTTPRequestHandler):
 	def do_GET(self):
 		try:
-			if self.path.endswith("/"):
-				print "read template"
-				f = open('template', 'r')
-				self.send_response(200)
-				self.send_header('Content-Type', 'text/html')
-				self.end_headers()
-				self.wfile.write(f.read())
-				f.close()
-				return
-
 			patharray = self.path.split('/')
 
 			sc = ServerConfig()
@@ -25,6 +16,35 @@ class Server(BaseHTTPRequestHandler):
 				fullpath = cdir
 			else:
 				self.send_error(404, 'Not found')
+				return
+
+			if self.path.endswith("/"):
+				print "read template"
+				f = open('template', 'r')
+				readed = f.read()
+				f.close()
+
+				title, route = "", ""
+
+				if patharray[1] == "":
+					title = 'ROOT PATH'
+					route = '/'
+
+				for i in range(len(sc.names)):
+					if patharray[1].find(sc.names[i]) is not -1:
+						title = sc.names[i]
+						route = self.path
+
+
+				# string replace
+				readed = readed.replace("__TITLE__",title)
+				readed = readed.replace("__ROUTE__",route)
+				readed = readed.replace("__LIST__",'test')
+
+				self.send_response(200)
+				self.send_header('Content-Type', 'text/html')
+				self.end_headers()
+				self.wfile.write(readed)
 				return
 
 			filename = ''
