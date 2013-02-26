@@ -24,7 +24,7 @@ class Server(BaseHTTPRequestHandler):
 				readed = f.read()
 				f.close()
 
-				title, route = "", ""
+				title, route, realpath = "", "", ""
 
 				if patharray[1] == "":
 					title = 'ROOT PATH'
@@ -34,12 +34,22 @@ class Server(BaseHTTPRequestHandler):
 					if patharray[1].find(sc.names[i]) is not -1:
 						title = sc.names[i]
 						route = self.path
+						realpath = sc.routes[i]
 
+				# folder reading
+				filelist = ""
+				if realpath == "":
+					target = sc.names
+				else:
+					target = os.listdir(realpath)
+
+				for l in target:
+					filelist += "\t\t<tr>\n\t\t\t<td><a>" + l + "</a></td>\n\t\t</tr>\n"
 
 				# string replace
 				readed = readed.replace("__TITLE__",title)
 				readed = readed.replace("__ROUTE__",route)
-				readed = readed.replace("__LIST__",'test')
+				readed = readed.replace("__LIST__",filelist)
 
 				self.send_response(200)
 				self.send_header('Content-Type', 'text/html')
