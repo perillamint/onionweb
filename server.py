@@ -3,7 +3,7 @@
 # author: KBuild, Maneulyori
 # email: qwer7995@gmail.com(KBuild), maneulyori@gmail.com(Maneulyori)
 
-import string,cgi,time, os, sys
+import string,cgi,time, os, sys, urllib2
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from pprint import pprint
 
@@ -45,6 +45,7 @@ class Server(BaseHTTPRequestHandler):
 			print "PATH : " + fullpath
 			print "realpath : " + realpath
 
+			#Directory listing
 			if os.path.isdir(realpath):
 				print "read template"
 				f = open('template', 'r')
@@ -84,6 +85,8 @@ class Server(BaseHTTPRequestHandler):
 					self.send_error(403, 'Forbidden')
 					return
 
+			#Unescape realpath
+			realpath = urllib2.unquote(realpath)
 			f = open(realpath)
 
 			self.send_response(200)
