@@ -19,6 +19,7 @@ class MainUI:
 		def destroy(self, widget, data=None):
 				print "Application terminating..."
 				self.saveConfig()
+				self.stopServerFunc()
 				gtk.main_quit()
 
 		def closeWindow(self, widget, data=None):
@@ -31,6 +32,7 @@ class MainUI:
 				confirmBox.set_markup("This will close onionwebshare server. Are you sure?")
 				userAnswer = confirmBox.run()
 				if userAnswer == gtk.RESPONSE_OK:
+					self.saveConfig()
 					self.stopServerFunc()
 					gtk.main_quit()
 				
