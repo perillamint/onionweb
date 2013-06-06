@@ -62,7 +62,7 @@ class MainUI:
 			else:
 				pid = self.p.pid
 				os.kill(pid, signal.SIGKILL)
-				os.kill(pid+1, signal.SIGKILL)
+				#os.kill(pid+1, signal.SIGKILL)
 				self.p = None
 #			try
 #				fp = open("owsserver.pid", "r")

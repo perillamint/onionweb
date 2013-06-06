@@ -7,8 +7,7 @@
 	</head>
 	<p>__ROUTE__</p>
 	<body>
-		<table>
-__LIST__
-		</table>
+		<table class="list">
+__LIST__		</table>
 	</body>
 </html>
