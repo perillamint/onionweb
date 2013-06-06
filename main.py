@@ -31,18 +31,19 @@ class MainUI:
 				confirmBox.set_markup("This will close onionwebshare server. Are you sure?")
 				userAnswer = confirmBox.run()
 				if userAnswer == gtk.RESPONSE_OK:
+					self.stopServerFunc()
 					gtk.main_quit()
 				
 				confirmBox.destroy()
 
-		def make_button(self, title=None, event_type=None, event_func=None):
+		def makeButton(self, title=None, event_type=None, event_func=None):
 			button = gtk.Button(title)
 			if event_type is not None and event_func is not None:
 				button.connect(event_type, event_func, None)
 			button.show()
 			return button
 
-		def start_server(self, widget, data=None):
+		def startServer(self, widget, data=None):
 			portnum = self.portbox.get_text()
 			if portnum.isdigit() is True and portnum is not None and int(portnum) > 1024:
 				cmd = "python server.py " + str(portnum)
@@ -56,32 +57,28 @@ class MainUI:
 #					fp = open("owsserver.pid", "w")
 #					fp.write(str(os.getpid()))
 #					fp.close()
-#					self.server_func(int(portnum))
+#					self.serverFunc(int(portnum))
 #				return
 			else:
 				print "Wrong port number"
 
-		def stop_server(self, widget, data=None):
+		def stopServer(self, widget, data=None):
+			self.stopServerFunc();
+
+		def stopServerFunc(self):
 			if self.p is None:
 				print "Already process killed"
 			else:
 				pid = self.p.pid
-				os.kill(pid, signal.SIGKILL)
-				#os.kill(pid+1, signal.SIGKILL)
+				os.kill(pid, signal.SIGTERM)
+				os.kill(pid+1, signal.SIGTERM)
 				self.p = None
-#			try
-#				fp = open("owsserver.pid", "r")
-#				child = fp.read().strip()
-#				print "Server stop."
-#				os.kill(int(child), signal.SIGKILL)
-#				fp.close()
-#			except: pass
 
-		def server_func(self, portnum):
+		def serverFunc(self, portnum):
 			self.server = HTTPServer(('localhost', portnum), Server)
 			self.server.serve_forever()
 
-		def remove_row(self, widget, data=None):
+		def removeRow(self, widget, data=None):
 			if data.keyval != 65535:
 				return False
 			selection = self.tree.get_selection()
@@ -140,8 +137,8 @@ class MainUI:
 				self.portbox.show()
 				linkbox.pack_start(self.portbox)
 
-				linkbox.pack_start(self.make_button("Start", "clicked", self.start_server))
-				linkbox.pack_start(self.make_button("Stop", "clicked", self.stop_server))
+				linkbox.pack_start(self.makeButton("Start", "clicked", self.startServer))
+				linkbox.pack_start(self.makeButton("Stop", "clicked", self.stopServer))
 
 				linkbox.show()
 
@@ -155,8 +152,8 @@ class MainUI:
 				self.lblrfname.show()
 
 				btnbox.add(self.lblrfname)
-				btnbox.add(self.make_button("Select", "clicked", self.addFile))
-				btnbox.add(self.make_button("Exit", "clicked", self.terminateConfirm))
+				btnbox.add(self.makeButton("Select", "clicked", self.addFile))
+				btnbox.add(self.makeButton("Exit", "clicked", self.terminateConfirm))
 				btnbox.show()
 
 				#setting add list box ( 4th line )
@@ -171,7 +168,7 @@ class MainUI:
 
 				addbox.add(lbltitle)
 				addbox.add(self.foldername)
-				addbox.add(self.make_button("Add", "clicked", lambda w, d: self.collist.append([self.foldername.get_text(), self.rfname])))
+				addbox.add(self.makeButton("Add", "clicked", lambda w, d: self.collist.append([self.foldername.get_text(), self.rfname])))
 				addbox.show()
 
 				#selected folder listview ( 5th line )
@@ -186,7 +183,7 @@ class MainUI:
 
 				viewcontainer = gtk.TreeView()
 				self.tree = viewcontainer
-				viewcontainer.connect("key-press-event", self.remove_row)
+				viewcontainer.connect("key-press-event", self.removeRow)
 				viewcontainer.set_model(self.collist)
 
 				cell = gtk.CellRendererText()
