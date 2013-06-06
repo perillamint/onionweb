@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# author: KBuild, Maneulyori
+# email: qwer7995@gmail.com(KBuild), maneulyori@gmail.com(Maneulyori)
 
 import string,cgi,time, os, sys
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
