@@ -14,39 +14,57 @@ class Server(BaseHTTPRequestHandler):
 
 			sc = ServerConfig()
 			cdir = sc.getDir(patharray[1])
+
 			if cdir is not False:
 				fullpath = cdir
 			else:
 				self.send_error(404, 'Not found')
 				return
 
-			if self.path.endswith("/"):
+			#initialize & title, route, realpath bind
+			title, route, realpath = "", "", ""
+
+			if patharray[1] == "":
+				title = 'ROOT PATH'
+				route = '/'
+			else:
+				for i in range(len(sc.names)):
+					if patharray[1].find(sc.names[i]) != -1:
+						title = sc.names[i]
+						route = self.path
+
+			# patharray second element to end of array + filename => realpath
+			if len(patharray) < 3:
+				realpath = fullpath
+			else:
+				realpath = fullpath
+				for i in range(len(patharray) - 2):
+					realpath += "/" + patharray[i+2]
+
+			print "URL PATH : " + self.path
+			print "PATH : " + fullpath
+			print "realpath : " + realpath
+
+			if os.path.isdir(realpath):
 				print "read template"
 				f = open('template', 'r')
 				readed = f.read()
 				f.close()
 
-				title, route, realpath = "", "", ""
-
-				if patharray[1] == "":
-					title = 'ROOT PATH'
-					route = '/'
-
-				for i in range(len(sc.names)):
-					if patharray[1].find(sc.names[i]) is not -1:
-						title = sc.names[i]
-						route = self.path
-						realpath = sc.routes[i]
-
 				# folder reading
 				filelist = ""
-				if realpath == "":
+				if patharray[1] == "":#if Directory Root
 					target = sc.names
 				else:
 					target = os.listdir(realpath)
 
 				for l in target:
-					filelist += "\t\t<tr>\n\t\t\t<td><a>" + l + "</a></td>\n\t\t</tr>\n"
+					prevpath = route
+					if prevpath.endswith("/") is False:
+						prevpath = prevpath + "/"
+					if prevpath.startswith(".") is False:
+						prevpath = "" + prevpath
+					filelist += "\t\t<tr>\n\t\t\t<td><a href=\"" + prevpath + l +"\">" + l + "</a></td>\n\t\t</tr>\n"
 
 				# string replace
 				readed = readed.replace("__TITLE__",title)
@@ -59,13 +77,6 @@ class Server(BaseHTTPRequestHandler):
 				self.wfile.write(readed)
 				return
 
-			filename = ''
-
-			for i in range(len(patharray)-2):
-				filename += '/' + patharray[i+2]
-
-			fullpath += filename
-
 			forbidlist = ['server.py', 'main.py', 'template', 'list.conf']
 
 			for forbid in forbidlist:
@@ -73,7 +84,7 @@ class Server(BaseHTTPRequestHandler):
 					self.send_error(403, 'Forbidden')
 					return
 
-			f = open(fullpath)
+			f = open(realpath)
 
 			self.send_response(200)
 			#setting header
