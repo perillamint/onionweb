@@ -1,11 +1,13 @@
-_Onion Web Share_
+# Onion Web Share
 
-GUI Webshare programe
+Onion Web Share is HTTP-based file sharing program written in Python.
 
-/main.py -> Draw UI & load Server
+## Sources
 
-/server.py -> HTTP Server Class
+`/main.py` -> Draw UI & load Server
 
-/template -> Client Page(HTML)
+`/server.py` -> HTTP Server Class
 
-/list.conf -> folder list & name
+`/template` -> Client Page(HTML)
+
+`/list.conf` -> folder list & name configuration file
