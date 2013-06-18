@@ -48,7 +48,7 @@ class Server(BaseHTTPRequestHandler):
 			#Directory listing
 			if os.path.isdir(realpath):
 				print "read template"
-				f = open('template', 'r')
+				f = open('template.html', 'r')
 				readed = f.read()
 				f.close()
 

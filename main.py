@@ -136,6 +136,7 @@ class MainUI:
 				linkbox.pack_start(lblport)
 
 				self.portbox = gtk.Entry()
+				self.portbox.set_text("8800");
 				self.portbox.show()
 				linkbox.pack_start(self.portbox)
 
