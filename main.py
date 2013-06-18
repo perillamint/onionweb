@@ -102,6 +102,78 @@ class MainUI:
 					self.rfname = sfile
 			filechooser.destroy()
 
+		def openShared(self, widget, data = None):
+			self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+			self.window.set_border_width(10)
+
+			btnbox = gtk.HButtonBox()
+			btnbox.set_layout(gtk.BUTTONBOX_END)
+			btnbox.set_spacing(5)
+
+			self.lblrfname = gtk.Label("/")
+			self.rfname = "/"
+			self.lblrfname.show()
+
+			btnbox.add(self.lblrfname)
+
+			btnbox.add(self.makeButton("Select", "clicked", self.addFile))
+			btnbox.add(self.makeButton("Exit", "clicked", self.terminateConfirm))
+			btnbox.show()
+
+			#setting add list box ( 4th line )
+			addbox = gtk.HBox()
+			addbox.set_spacing(5)
+
+			lbltitle = gtk.Label("Title : ")
+			lbltitle.show()
+
+			self.foldername = gtk.Entry()
+			self.foldername.show()
+
+			addbox.add(lbltitle)
+			addbox.add(self.foldername)
+			addbox.add(self.makeButton("Add", "clicked", lambda w, d: self.collist.append([self.foldername.get_text(), self.rfname])))
+			addbox.show()
+
+			#selected folder listview ( 5th line )
+			self.collist = gtk.ListStore(str, str)
+
+			f = open("list.conf")
+			datas = f.readlines()
+			for data in datas:
+				arr = data.split(',')
+				self.collist.append([arr[0].strip(), arr[1].strip()])
+			f.close()
+
+			viewcontainer = gtk.TreeView()
+			self.tree = viewcontainer
+			viewcontainer.connect("key-press-event", self.removeRow)
+			viewcontainer.set_model(self.collist)
+
+			cell = gtk.CellRendererText()
+			col = gtk.TreeViewColumn("Name")
+			col.pack_start(cell)
+			col.add_attribute(cell, 'text', 0)
+
+			cell2 = gtk.CellRendererText()
+			col2 = gtk.TreeViewColumn("Real path")
+			col2.pack_start(cell2)
+			col2.add_attribute(cell2, 'text', 1)
+
+			viewcontainer.append_column(col)
+			viewcontainer.append_column(col2)
+
+			viewcontainer.show()
+
+			settingsBox = gtk.VBox(spacing = 5)
+			settingsBox.pack_start(btnbox)
+			settingsBox.pack_start(addbox)
+			settingsBox.pack_start(viewcontainer)
+			settingsBox.show()
+
+			self.window.add(settingsBox)
+			self.window.show()
+
 		def saveConfigFile(self, model, path, iter, confFp):
 			str = model.get_value(iter, 0)
 			str += ","
@@ -115,106 +187,53 @@ class MainUI:
 			f.close()
 
 		def __init__(self):
-				self.p = None
-				self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-				#self.window.connect("delete_event", self.delete_event)
-				self.window.connect("destroy", self.destroy)
-				self.window.set_border_width(5)
+			self.p = None
+			self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+			#self.window.connect("delete_event", self.delete_event)
+			self.window.connect("destroy", self.destroy)
+			self.window.set_border_width(5)
 
-				#setting label ( 1st line )
-				label = gtk.Label()
-				label.set_markup("<b>OnionWebShare</b>")
-				#label.set_justify(gtk.JUSTIFY_LEFT)
-				label.show()
+			#setting label ( 1st line )
+			label = gtk.Label()
+			label.set_markup("<b>OnionWebShare</b>")
+			#label.set_justify(gtk.JUSTIFY_LEFT)
+			label.show()
 
-				#setting box ( 2nd line )
-				linkbox = gtk.HBox()
-				linkbox.set_spacing(5)
+			#setting box ( 2nd line )
+			linkbox = gtk.HBox()
+			linkbox.set_spacing(5)
 
-				lblport = gtk.Label("Server Port : ")
-				lblport.show()
-				linkbox.pack_start(lblport)
+			lblport = gtk.Label("Server Port : ")
+			lblport.show()
+			linkbox.pack_start(lblport)
 
-				self.portbox = gtk.Entry()
-				self.portbox.set_text("8800");
-				self.portbox.show()
-				linkbox.pack_start(self.portbox)
+			self.portbox = gtk.Entry()
+			self.portbox.set_text("8800");
+			self.portbox.show()
+			linkbox.pack_start(self.portbox)
 
-				linkbox.pack_start(self.makeButton("Start", "clicked", self.startServer))
-				linkbox.pack_start(self.makeButton("Stop", "clicked", self.stopServer))
+			linkbox.pack_start(self.makeButton("Start", "clicked", self.startServer))
+			linkbox.pack_start(self.makeButton("Stop", "clicked", self.stopServer))
 
-				linkbox.show()
+			linkbox.show()
 
-				#setting btnbox ( 3rd line )
-				btnbox = gtk.HButtonBox()
-				btnbox.set_layout(gtk.BUTTONBOX_END)
-				btnbox.set_spacing(5)
+			#setting btnbox ( 3rd line )
+			btnbox = gtk.HButtonBox()
+			btnbox.add(self.makeButton("Shared directory","clicked", self.openShared))
+			btnbox.show()
 
-				self.lblrfname = gtk.Label("/")
-				self.rfname = "/"
-				self.lblrfname.show()
 
-				btnbox.add(self.lblrfname)
-				btnbox.add(self.makeButton("Select", "clicked", self.addFile))
-				btnbox.add(self.makeButton("Exit", "clicked", self.terminateConfirm))
-				btnbox.show()
+			#boxing
+			top_box = gtk.VBox(spacing = 5)
+			top_box.pack_start(label) # 1st line
+			top_box.pack_start(linkbox) # 2nd line
+			top_box.pack_start(btnbox) # 3rd line
+			#top_box.pack_start(addbox) # 4th line
+			#stop_box.pack_start(viewcontainer) # 5th line
+			top_box.show()
 
-				#setting add list box ( 4th line )
-				addbox = gtk.HBox()
-				addbox.set_spacing(5)
-
-				lbltitle = gtk.Label("Title : ")
-				lbltitle.show()
-
-				self.foldername = gtk.Entry()
-				self.foldername.show()
-
-				addbox.add(lbltitle)
-				addbox.add(self.foldername)
-				addbox.add(self.makeButton("Add", "clicked", lambda w, d: self.collist.append([self.foldername.get_text(), self.rfname])))
-				addbox.show()
-
-				#selected folder listview ( 5th line )
-				self.collist = gtk.ListStore(str, str)
-
-				f = open("list.conf")
-				datas = f.readlines()
-				for data in datas:
-					arr = data.split(',')
-					self.collist.append([arr[0].strip(), arr[1].strip()])
-				f.close()
-
-				viewcontainer = gtk.TreeView()
-				self.tree = viewcontainer
-				viewcontainer.connect("key-press-event", self.removeRow)
-				viewcontainer.set_model(self.collist)
-
-				cell = gtk.CellRendererText()
-				col = gtk.TreeViewColumn("Name")
-				col.pack_start(cell)
-				col.add_attribute(cell, 'text', 0)
-
-				cell2 = gtk.CellRendererText()
-				col2 = gtk.TreeViewColumn("real path")
-				col2.pack_start(cell2)
-				col2.add_attribute(cell2, 'text', 1)
-
-				viewcontainer.append_column(col)
-				viewcontainer.append_column(col2)
-
-				viewcontainer.show()
-
-				#boxing
-				top_box = gtk.VBox(spacing = 5)
-				top_box.pack_start(label) # 1st line
-				top_box.pack_start(linkbox) # 2nd line
-				top_box.pack_start(btnbox) # 3rd line
-				top_box.pack_start(addbox) # 4th line
-				top_box.pack_start(viewcontainer) # 5th line
-				top_box.show()
-
-				self.window.add(top_box)
-				self.window.show()
+			self.window.add(top_box)
+			self.window.show()
 
 		def main(self):
 				gtk.main()
