@@ -52,6 +52,7 @@ class MainUI:
 				if self.p is None:
 					self.p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
 					print "Server start. Port : " + portnum
+					self.statusLabel.set_markup("<b>Started</b>")
 				else:
 					print "Server is already binded"
 #				pid = os.fork()
@@ -66,6 +67,7 @@ class MainUI:
 
 		def stopServer(self, widget, data=None):
 			self.stopServerFunc();
+			self.statusLabel.set_markup("<b>Stopped</b>")
 
 		def stopServerFunc(self):
 			if self.p is None:
@@ -75,6 +77,8 @@ class MainUI:
 				os.kill(pid, signal.SIGTERM)
 				os.kill(pid+1, signal.SIGTERM)
 				self.p = None
+				print "Sever stopped"
+
 
 		def serverFunc(self, portnum):
 			self.server = HTTPServer(('localhost', portnum), Server)
@@ -217,6 +221,10 @@ class MainUI:
 
 			linkbox.show()
 
+			self.statusLabel = gtk.Label()
+			self.statusLabel.set_markup("<b>Stopped</b>")
+			self.statusLabel.show()
+
 			#setting btnbox ( 3rd line )
 			btnbox = gtk.HButtonBox()
 			btnbox.add(self.makeButton("Shared directory","clicked", self.openShared))
@@ -224,15 +232,14 @@ class MainUI:
 
 
 			#boxing
-			top_box = gtk.VBox(spacing = 5)
-			top_box.pack_start(label) # 1st line
-			top_box.pack_start(linkbox) # 2nd line
-			top_box.pack_start(btnbox) # 3rd line
-			#top_box.pack_start(addbox) # 4th line
-			#stop_box.pack_start(viewcontainer) # 5th line
-			top_box.show()
+			self.top_box = gtk.VBox(spacing = 5)
+			self.top_box.pack_start(label) # 1st line
+			self.top_box.pack_start(linkbox) # 2nd line
+			self.top_box.pack_start(self.statusLabel) # 3rd line
+			self.top_box.pack_start(btnbox) # 4td line
+			self.top_box.show()
 
-			self.window.add(top_box)
+			self.window.add(self.top_box)
 			self.window.show()
 
 		def main(self):
