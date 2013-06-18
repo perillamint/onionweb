@@ -48,7 +48,7 @@ class Server(BaseHTTPRequestHandler):
 			#Directory listing
 			if os.path.isdir(realpath):
 				print "read template"
-				f = open('template.html', 'r')
+				f = open('public/template.html', 'r')
 				readed = f.read()
 				f.close()
 
@@ -65,7 +65,7 @@ class Server(BaseHTTPRequestHandler):
 						prevpath = prevpath + "/"
 					if prevpath.startswith(".") is False:
 						prevpath = "" + prevpath
-					filelist += "\t\t<tr>\n\t\t\t<td><a href=\"" + prevpath + l +"\">" + l + "</a></td>\n\t\t</tr>\n"
+					filelist += "\t\t<li><a href=\"" + prevpath + l +"\">" + l + "</a></li>"
 
 				# string replace
 				readed = readed.replace("__TITLE__",title)
