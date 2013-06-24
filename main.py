@@ -92,7 +92,8 @@ class MainUI:
 			self.collist.remove(treeiter)
 
 		def addFile(self, widget, data=None):
-			filechooser = gtk.FileChooserDialog(title="Choose file to host", action=gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
+			filechooser = gtk.FileChooserDialog(title="Choose file to host", action=gtk.FILE_CHOOSER_ACTION_OPEN, 
+																					buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
 			filechooser.set_current_folder("~")
 			filechooser.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
 			response = filechooser.run()
@@ -121,14 +122,13 @@ class MainUI:
 			btnbox.add(self.lblrfname)
 
 			btnbox.add(self.makeButton("Select", "clicked", self.addFile))
-			btnbox.add(self.makeButton("Exit", "clicked", self.terminateConfirm))
 			btnbox.show()
 
 			#setting add list box ( 4th line )
 			addbox = gtk.HBox()
 			addbox.set_spacing(5)
 
-			lbltitle = gtk.Label("Title : ")
+			lbltitle = gtk.Label("Name : ")
 			lbltitle.show()
 
 			self.foldername = gtk.Entry()
