@@ -75,7 +75,6 @@ class MainUI:
 			else:
 				pid = self.p.pid
 				os.kill(pid, signal.SIGTERM)
-				os.kill(pid+1, signal.SIGTERM)
 				self.p = None
 				print "Sever stopped"
 
