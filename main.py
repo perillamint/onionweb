@@ -107,6 +107,7 @@ class MainUI:
 
 		def openShared(self, widget, data = None):
 			self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+			self.window.set_title("Shared directories")
 			self.window.set_border_width(10)
 
 			btnbox = gtk.HButtonBox()
@@ -195,6 +196,7 @@ class MainUI:
 			#self.window.connect("delete_event", self.delete_event)
 			self.window.connect("destroy", self.destroy)
 			self.window.set_border_width(5)
+			self.window.set_title("OnionWeb")
 
 			#setting label ( 1st line )
 			label = gtk.Label()
