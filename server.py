@@ -137,14 +137,16 @@ class ServerConfig():
 	def __init__(self):
 		self.configListing()
 
-def main():
-	try:
-		server = HTTPServer(('localhost', int(sys.argv[1])), Server)
-		print 'server start...'
-		server.serve_forever()
-	except KeyboardInterrupt:
-		server.socket.close()
-		print 'server stop...'
+def main():	
+	if len(sys.argv) != 1 :
+		try:
+			server = HTTPServer(('localhost', int(sys.argv[1])), Server)
+			print 'server start...'
+			print sys.argv
+			server.serve_forever()
+		except KeyboardInterrupt:
+			server.socket.close()
+			print 'server stop...'
 
 if __name__ == '__main__':
 	main()
